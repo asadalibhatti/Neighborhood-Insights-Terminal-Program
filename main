@@ -1,0 +1,120 @@
+# whatsap me at +92 344 4738205 to get full code
+
+#  clear the terminal screen
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def bubble_sort(report):
+    n = len(report)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if (report[j][0], -(report[j][2] + report[j][3]), -ord(report[j][1][0])) > (report[j+1][0], -(report[j+1][2] + report[j+1][3]), -ord(report[j+1][1][0])):
+                report[j], report[j+1] = report[j+1], report[j]
+    return report
+
+
+def generate_decades_report(film_path, neighborhood_path):
+    #  film location data
+    film_data = {}
+    with open(film_path, 'r', newline='', encoding='utf-8') as film_file:
+        film_reader = csv.reader(film_file)
+        next(film_reader)  # Skip header
+        for row in film_reader:
+            decade = row[5]
+            neighborhood_id = row[14]
+            type = row[1]
+            title = row[2]
+            if decade not in film_data:
+                film_data[decade] = {}
+            if neighborhood_id not in film_data[decade]:
+                film_data[decade][neighborhood_id] = {'movie': set(), 'tv': set()}
+            film_data[decade][neighborhood_id][type].add(title)
+
+    neighborhoods = {}
+    with open(neighborhood_path, 'r', newline='', encoding='utf-8') as neighborhood_file:
+        neighborhood_reader = csv.reader(neighborhood_file)
+        for row in neighborhood_reader:
+            neighborhood_id = row[0]
+            neighborhood_name = row[1]
+            neighborhoods[neighborhood_id] = neighborhood_name
+
+    report = []
+    for decade, data in film_data.items():
+        for neighborhood_id, counts in data.items():
+            total_movies = len(counts.get('movie', set()))
+            total_tv_shows = len(counts.get('tv', set()))
+            report.append([decade, neighborhoods[neighborhood_id], total_movies, total_tv_shows])
+
+    report = bubble_sort(report)
+
+    return report
+
+
+
+def run_decades_report():
+    clear_screen()
+    print("Running Decades Report...")
+
+    film_path = 'data/film_locations_with_id.csv'
+    neighborhood_path = 'data/sf_neighborhoods_with_centroid.csv'
+
+    report = generate_decades_report(film_path, neighborhood_path)
+
+    print("Decades Report:")
+    current_decade = None
+    for line in report:
+        if line[0] != current_decade:
+            current_decade = line[0]
+            print(f"\nDecade: {current_decade}")
+            print("Neighborhood\t\tMovie Locations\tTV Locations")
+        print(f"{line[1]}\t\t{line[2]}\t\t{line[3]}")
+
+def run_actor_report():
+    clear_screen()
+    print("Running Actor Report...")
+    film_path = 'data/film_locations_with_id.csv'
+    neighborhood_path = 'data/sf_neighborhoods_with_centroid.csv'
+    report=generate_actors_report(film_path, neighborhood_path)
+    print_actor_report(report)
+def print_actor_report(report):
+    for line in report:
+        print(f"Actor: {line[0]}")
+        print("Movie Title\t\t\t\t\t\t\t\tFormat\tYears\t\tLocations")
+        print(f"{line[1]}\t\t{line[2]}\t{line[3]}\t\t{line[4]}")
+        print()
+
+def generate_actors_report(film_path, neighborhood_path):
+    # Read neighborhood data
+    # whatsap me at +92 344 4738205 to get full code
+
+def run_distributor_report():
+    clear_screen()
+    print("Running Distributor Report...")
+
+
+
+while True:
+    clear_screen()
+    print("Menu for Selecting the Report to Run:")
+    print("Enter the number of the report you would like to view:")
+    print("1) Decades Report")
+    print("2) Actor Report")
+    print("3) Distributor Report")
+
+    choice = input("Enter your choice (1/2/3): ")
+    if choice == '1':
+        run_decades_report()
+    elif choice == '2':
+        run_actor_report()
+    elif choice == '3':
+        run_distributor_report()
+    else:
+        print("Invalid choice. Please enter a valid option (1/2/3).")
+        continue
+
+    another_report = input("Do you want to run another report? (yes/no): ")
+    if another_report.lower() != 'yes':
+        clear_screen()
+        print("Thank you for using the reporting system. Goodbye!")
+        break
